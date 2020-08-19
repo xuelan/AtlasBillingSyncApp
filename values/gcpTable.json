@@ -1,0 +1,5 @@
+{
+    "name": "gcpTable",
+    "value": "table_id",
+    "from_secret": false
+}

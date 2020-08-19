@@ -1,0 +1,7 @@
+{
+    "name": "numCsvHeader",
+    "value": {
+        "$numberInt": "num_csv_header"
+    },
+    "from_secret": false
+}

@@ -1,0 +1,5 @@
+{
+    "name": "gcpProject",
+    "value": "project_id",
+    "from_secret": false
+}

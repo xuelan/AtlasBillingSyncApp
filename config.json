@@ -1,0 +1,14 @@
+{
+    "app_id": "billingapp-gsviw",
+    "config_version": 20200603,
+    "name": "BillingApp",
+    "location": "IE",
+    "deployment_model": "GLOBAL",
+    "security": {},
+    "custom_user_data_config": {
+        "enabled": false
+    },
+    "sync": {
+        "development_mode_enabled": false
+    }
+}

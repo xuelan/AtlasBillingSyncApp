@@ -1,0 +1,9 @@
+{
+    "name": "LastMonthInvoiceTrigger",
+    "type": "SCHEDULED",
+    "config": {
+        "schedule": "0 0 5 * *"
+    },
+    "function_name": "mainSyncLastMonthInvoice",
+    "disabled": true
+}
