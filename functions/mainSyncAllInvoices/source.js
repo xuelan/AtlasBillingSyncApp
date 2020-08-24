@@ -15,38 +15,56 @@ exports = function(){
         
         const results = doc.results;
         const length = results.length;
+      
 
         console.log("<<=== Full replacement mode ===>>");
         console.log("Totolly " + length + " invoices will by synced from Atlas to Bigquery");
             
-        let tableName = getTableName();
-
-        context.functions.execute("createBigqueryTable", tableName);
+        const tableName = getTableName();
         
-        //TODO For testing, to remove
-        /*for (i = 28; i < 34; i++) {
-           context.functions.execute("syncInvoiceCsvById", results[i].id, tableName);
-        }*/
-        
-        for (i = 0; i < length; i++) {
-           context.functions.execute("syncInvoiceCsvById", results[i].id, tableName);
-        }
-        
-        //TODO Integrety check : calculate and print the total invoice items number, if numbers is the same as bigquery inserted rows, delete the previous month's table
-        //Currently are the other tables are deleted.
-        context.functions.execute("deleteBigQueryTablesExcept", tableName);
-        
+        context.functions.execute("createBigqueryTable", tableName)
+          .then(result => {
+            //TODO Integrety check : if total synced number is the same as bigquery inserted rows, delete the previous month's table
+            processResults(results, tableName, length)
+            .then(totalSyncedNumber => {
+               console.log("Total synced invoice items number is: " + totalSyncedNumber);
+               
+               //Other tables are droped.
+               context.functions.execute("deleteBigQueryTablesExcept", tableName); 
+           })
+        });
       }        
     })
     .catch(err => console.error(`Failed to insert billing doc: ${err}`));
 };
 
 function getTableName(){
+
   const gcpTable = context.values.get("gcpTable");
-  
   todayDateString = new Date().getTime();
+  const tableName = gcpTable.concat("_",todayDateString);
   
-  const gcpTableName = gcpTable.concat("_",todayDateString);
+  return tableName;
+}
+
+async function processResults(results, tableName, length){
+
+  let totalInvoicesSynced = 0;
   
-  return gcpTableName;
+  //TODO For testing, to remove
+  /*for (var i = 30; i < length; i++) {
+    await context.functions.execute("syncInvoiceCsvById", results[i].id, tableName)
+      .then(result => {
+      totalInvoicesSynced = totalInvoicesSynced + result;
+    })
+  }*/
+  
+  for (var i = 0; i < length; i++) {
+    await context.functions.execute("syncInvoiceCsvById", results[i].id, tableName)
+      .then(result => {
+      totalInvoicesSynced = totalInvoicesSynced + result;
+    })
+  }
+  
+  return totalInvoicesSynced;
 }

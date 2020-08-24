@@ -8,8 +8,8 @@ exports = function(exceptTableName){
         
         const tableName = x.tableReference.tableId;
         if(tableName != exceptTableName) {
-          console.log("Deleting table: " + tableName);
           context.functions.execute("deleteBigQueryTableByName", tableName);
+          console.log("Table " + tableName + " deleted");
         } 
       });
     });

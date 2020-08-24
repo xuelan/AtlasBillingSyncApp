@@ -22,21 +22,15 @@ exports = function(){
         console.log("Totol invoices number is : " + length);
         
         //First creation of the table, delete, recreate and insert into the same might not working, see https://cloud.google.com/bigquery/docs/error-messages#metadata-errors-for-streaming-inserts
-        context.functions.execute("createBigqueryTable", tableName);
-        
-        //TODO For testing to be removed
-        /*for (i = 30; i < length; i++) {
-          if(!results[i].created.includes(getCurrentMonthInvoieDate())){
-            context.functions.execute("syncInvoiceCsvById", results[i].id, tableName);
-          }
-        }*/
-        
-        for (i = 0; i < length; i++) {
-          if(!results[i].created.includes(getCurrentMonthInvoieDate())){
-            context.functions.execute("syncInvoiceCsvById", results[i].id, tableName);
-          }
-        }
-        
+        context.functions.execute("createBigqueryTable", tableName)
+          .then(result => {
+            
+              //TODO Integrety check : if total synced numbers is the same as bigquery inserted rows
+              processResults(results, tableName, length)
+              .then(totalSyncedNumber => {
+                console.log("Total synced invoice items number is: " + totalSyncedNumber);
+              })
+          });
       }        
     })
     .catch(err => console.error(`Failed to insert billing doc: ${err}`));
@@ -52,3 +46,30 @@ function getCurrentMonthInvoieDate() {
   return lastMonthDate;
 }
 
+async function processResults(results, tableName, length){
+
+  let totalInvoicesSynced = 0;
+  const currentMonthInvoieDate = getCurrentMonthInvoieDate();
+  
+  //TODO For testing, to remove
+  /*for (var i = 30; i < length; i++) {
+    if(!results[i].created.includes(currentMonthInvoieDate)){
+        await context.functions.execute("syncInvoiceCsvById", results[i].id, tableName)
+        .then(result => {
+          totalInvoicesSynced = totalInvoicesSynced + result;
+        })
+    }  
+  }*/
+  
+  for (var i = 0; i < length; i++) {
+    if(!results[i].created.includes(currentMonthInvoieDate)){
+        await context.functions.execute("syncInvoiceCsvById", results[i].id, tableName)
+        .then(result => {
+          totalInvoicesSynced = totalInvoicesSynced + result;
+        })
+    }  
+  }      
+        
+  
+  return totalInvoicesSynced;
+}

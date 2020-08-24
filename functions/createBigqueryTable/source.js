@@ -18,6 +18,7 @@ exports = async function(tableName) {
     
     // The response body is a BSON.Binary object. Parse it and return.
     result = JSON.parse(response.body.text());
+    console.log( "Table created: " + tableName);
   
   }  
   catch(err) {

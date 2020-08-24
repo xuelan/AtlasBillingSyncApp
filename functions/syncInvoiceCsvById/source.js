@@ -31,7 +31,7 @@ exports = function(invoiceID, tableName){
 
         syncJsonArrayByBatch(jsonObj, chunk, tableName);
         
-        return jsonsLength
+        return jsonsLength;
       }
     })
     .catch(err => console.error(`Failed to insert invoice details: ${err}`));
